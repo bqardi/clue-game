@@ -1,28 +1,55 @@
 document.addEventListener("DOMContentLoaded", event => {
     const gameRiddle = document.getElementById("game-riddle");
     const gameChoices = document.getElementById("game-choices");
+    const gameAdvance = document.getElementById("game-advance");
 
-    const riddleOne = [{
-            text: "Travel to the sun, to find water",
-            colorsCorrect: ["yellow", "cyan"],
-            colorsWrong: ["red", "green", "brown"],
-        },
-        {
-            text: "Travel to the forest, and step into the mud",
-            colorsCorrect: ["green", "brown"],
-            colorsWrong: ["yellow", "red", "cyan"],
-        },
-    ]
+    let levelFileName = location.href.split("/").slice(-1)[0];
+    let level = parseInt(levelFileName.substr(6, 4));
+    let answers = [];
+    let wrongAnswerCount = 0;
 
-    let answer = [];
 
-    const activeObj = riddleOne[randomInteger(0, riddleOne.length)];
+    const activeObj = riddleOne.riddles[randomInteger(0, riddleOne.riddles.length)];
 
     setRiddle(gameRiddle, gameChoices, activeObj);
 
+    gameAdvance.addEventListener("click", tryAdvance);
+
+    function tryAdvance() {
+        const answerResponse = checkAnswers();
+        if (answerResponse === "Correct") {
+            location.href = `level-${level + 1}.html`;
+        } else {
+            if (answerResponse != "Wrong" || riddleOne.hints.length === 0) {
+                alert(answerResponse);
+                return;
+            }
+            alert(riddleOne.hints[wrongAnswerCount]);
+            if (wrongAnswerCount < riddleOne.hints.length - 1) {
+                wrongAnswerCount++;
+            }
+        }
+    }
+
+    function checkAnswers() {
+        if (answers.length === 0) {
+            return "You need to select something!";
+        }
+        if (answers.length !== activeObj.correct.length) {
+            return "The selected amount of answers are incorrect!";
+        }
+        for (let i = 0; i < activeObj.correct.length; i++) {
+            const correctAnswer = activeObj.correct[i];
+            if (!answers.includes(correctAnswer)) {
+                return "Wrong";
+            }
+        }
+        return "Correct";
+    }
+
     function setRiddle(elmTxt, elmChoices, obj) {
         elmTxt.innerHTML = `<span class="game-riddle__title">Riddle</span>: ${obj.text}`;
-        let colors = arrayCombine(obj.colorsCorrect, obj.colorsWrong);
+        let colors = arrayCombine(obj.correct, obj.wrong);
         shuffleArray(colors);
         colors.forEach(color => {
             let elmChoice = document.createElement("BUTTON");
@@ -32,14 +59,13 @@ document.addEventListener("DOMContentLoaded", event => {
             elmChoice.addEventListener("click", function() {
                 elmChoice.classList.toggle("js-chosen");
                 if (elmChoice.classList.contains("js-chosen")) {
-                    answer.push(color);
+                    answers.push(color);
                 } else {
-                    const index = answer.indexOf(color);
+                    const index = answers.indexOf(color);
                     if (index > -1) {
-                        answer.splice(index, 1);
+                        answers.splice(index, 1);
                     }
                 }
-                console.log(answer);
             })
         });
     }

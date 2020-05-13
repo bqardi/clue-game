@@ -18,9 +18,14 @@ svg {
 }
 
 button {
+    padding: 0.5rem 1rem;
     border: 5px solid black;
     border-radius: 5px;
     cursor: pointer;
+}
+
+button:hover {
+    border-color: blueviolet;
 }
 
 
@@ -34,12 +39,37 @@ button {
     height: 100vh;
 }
 
+.game-button {
+    padding: 0.5rem 1rem;
+    border: 5px solid black;
+    border-radius: 5px;
+    color: black;
+}
+
+.game-button:hover {
+    border-color: blueviolet;
+}
+
 
 /* #region GAME AREA */
 
 .game-area {
+    position: relative;
     width: 100vw;
-    max-width: 300px;
+    max-width: 400px;
+}
+
+.game-title {
+    margin: 0 0 1rem;
+}
+
+.game-canvas {
+    position: relative;
+    height: 230px;
+}
+
+.game-riddle {
+    padding: 1rem 0;
 }
 
 .game-riddle__title {
@@ -47,18 +77,16 @@ button {
 }
 
 .game-choices {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, 50px);
-    gap: 5px;
+    display: flex;
+    justify-content: space-between;
     margin: 1rem 0;
 }
 
 .game-choices__choice {
-    width: 50px;
-    height: 50px;
+    height: 75px;
+    width: 75px;
 }
 
-.game-choices__choice:hover,
 .game-choices__choice.js-chosen:hover {
     border-color: blueviolet;
 }
@@ -72,6 +100,12 @@ button {
     font-family: 'Courier New', Courier, monospace;
     font-size: 1.5rem;
     font-weight: 1000;
+}
+
+.game-advance {
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
 
