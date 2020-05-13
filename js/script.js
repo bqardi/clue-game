@@ -1,31 +1,47 @@
 document.addEventListener("DOMContentLoaded", event => {
-    const gameRiddle = document.getElementById("game-riddle");
+    const gameTask = document.getElementById("game-task");
     const gameChoices = document.getElementById("game-choices");
     const gameAdvance = document.getElementById("game-advance");
 
     let levelFileName = location.href.split("/").slice(-1)[0];
     let level = parseInt(levelFileName.substr(6, 4));
+    const levelIndex = level - 1001;
     let answers = [];
     let wrongAnswerCount = 0;
 
 
-    const activeObj = riddleOne.riddles[randomInteger(0, riddleOne.riddles.length)];
+    // const activeObj = puzzles[levelIndex].task[randomInteger(0, puzzles[levelIndex].task.length)];
+    let activeTask;
 
-    setRiddle(gameRiddle, gameChoices, activeObj);
+    taskType(gameTask, gameChoices, puzzles[levelIndex]);
 
     gameAdvance.addEventListener("click", tryAdvance);
+
+    function taskType(elmTxt, elmChoices, obj) {
+        switch (obj.type) {
+            case "Riddle":
+                setColorButtons(elmTxt, elmChoices, obj);
+                break;
+            case "Stress test":
+                setColorButtons(elmTxt, elmChoices, obj);
+                break;
+
+            default:
+                break;
+        }
+    }
 
     function tryAdvance() {
         const answerResponse = checkAnswers();
         if (answerResponse === "Correct") {
             location.href = `level-${level + 1}.html`;
         } else {
-            if (answerResponse != "Wrong" || riddleOne.hints.length === 0) {
+            if (answerResponse != "Wrong" || puzzles[levelIndex].hints.length === 0) {
                 alert(answerResponse);
                 return;
             }
-            alert(riddleOne.hints[wrongAnswerCount]);
-            if (wrongAnswerCount < riddleOne.hints.length - 1) {
+            alert(puzzles[levelIndex].hints[wrongAnswerCount]);
+            if (wrongAnswerCount < puzzles[levelIndex].hints.length - 1) {
                 wrongAnswerCount++;
             }
         }
@@ -35,11 +51,11 @@ document.addEventListener("DOMContentLoaded", event => {
         if (answers.length === 0) {
             return "You need to select something!";
         }
-        if (answers.length !== activeObj.correct.length) {
+        if (answers.length !== activeTask.correct.length) {
             return "The selected amount of answers are incorrect!";
         }
-        for (let i = 0; i < activeObj.correct.length; i++) {
-            const correctAnswer = activeObj.correct[i];
+        for (let i = 0; i < activeTask.correct.length; i++) {
+            const correctAnswer = activeTask.correct[i];
             if (!answers.includes(correctAnswer)) {
                 return "Wrong";
             }
@@ -47,9 +63,10 @@ document.addEventListener("DOMContentLoaded", event => {
         return "Correct";
     }
 
-    function setRiddle(elmTxt, elmChoices, obj) {
-        elmTxt.innerHTML = `<span class="game-riddle__title">Riddle</span>: ${obj.text}`;
-        let colors = arrayCombine(obj.correct, obj.wrong);
+    function setColorButtons(elmTxt, elmChoices, obj) {
+        activeTask = obj.tasks[randomInteger(0, obj.tasks.length)]
+        elmTxt.innerHTML = `<span class="game-riddle__title">${obj.type}</span>: ${activeTask.text}`;
+        let colors = arrayCombine(activeTask.correct, activeTask.wrong);
         shuffleArray(colors);
         colors.forEach(color => {
             let elmChoice = document.createElement("BUTTON");
@@ -65,6 +82,9 @@ document.addEventListener("DOMContentLoaded", event => {
                     if (index > -1) {
                         answers.splice(index, 1);
                     }
+                }
+                if (obj.instantAnswer) {
+
                 }
             })
         });
