@@ -1,6 +1,5 @@
 const puzzles = [{
         type: "Riddle",
-        instantAnswer: false,
         hints: [
             "Nope! Wrong! Try again...",
             "Dude! Still the wrong answer!",
@@ -44,10 +43,25 @@ const puzzles = [{
                 wrong: ["black", "blue", "white"],
             },
         ],
+        currentTask: null,
+        initialize: function(elmTxt, elmChoices, callback) {
+            this.currentTask = this.tasks[randomInteger(0, this.tasks.length)];
+            let colors = arrayCombine(this.currentTask.correct, this.currentTask.wrong);
+            shuffleArray(colors);
+            elmTxt.innerHTML = `<span class="game-riddle__title">${this.type}</span>: ${this.currentTask.text}`;
+            colors.forEach(color => {
+                let elmChoice = document.createElement("BUTTON");
+                elmChoice.classList.add("game-choices__choice");
+                elmChoice.style.backgroundColor = color;
+                elmChoices.appendChild(elmChoice);
+                elmChoice.addEventListener("click", function() {
+                    callback(elmChoice, color);
+                });
+            });
+        }
     },
     {
         type: "Stress test",
-        instantAnswer: true,
         hints: [
             "Nope! Wrong! Try again...",
             "Dude! Still the wrong answer!",
@@ -56,9 +70,49 @@ const puzzles = [{
             "You are hopeless!",
         ],
         tasks: [{
-            text: "Something",
-            correct: ["yellow"],
-            wrong: ["red", "green", "brown", "blue"],
-        }, ]
+                text: "Something",
+                correct: ["yellow"],
+                wrong: ["red", "green", "brown", "blue"],
+            },
+            {
+                text: "Something else",
+                correct: ["yellow"],
+                wrong: ["red", "green", "brown", "blue"],
+            },
+        ],
+        currentTask: null,
+        initialize: function(elmChoices, callback) {
+            this.currentTask = this.tasks[randomInteger(0, this.tasks.length)];
+            let colors = arrayCombine(this.currentTask.correct, this.currentTask.wrong);
+            shuffleArray(colors);
+            colors.forEach(color => {
+                let elmChoice = document.createElement("BUTTON");
+                elmChoice.classList.add("game-choices__choice");
+                elmChoice.style.backgroundColor = color;
+                elmChoices.appendChild(elmChoice);
+                elmChoice.addEventListener("click", function() {
+                    callback(elmChoice, color);
+                });
+            });
+        }
     }
 ]
+
+function randomInteger(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function arrayCombine(array1, array2) {
+    let array = array1;
+    array = array.concat(array2);
+    return array;
+}
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        let j = randomInteger(0, array.length);
+        let tmp = array[i];
+        array[i] = array[j];
+        array[j] = tmp;
+    }
+}
