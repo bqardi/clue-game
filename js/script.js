@@ -4,8 +4,9 @@ document.addEventListener("DOMContentLoaded", event => {
     const gameAdvance = document.getElementById("game-advance");
 
     let levelFileName = location.href.split("/").slice(-1)[0];
-    let level = parseInt(levelFileName.substr(6, 4));
-    const levelIndex = level - 1001;
+    let level = parseInt(levelFileName.substr(0, levelFileName.length));
+    // let level = parseInt(levelFileName.substr(6, 4));
+    const levelIndex = level - 1;
     let answers = [];
     let wrongAnswerCount = 0;
 
@@ -34,7 +35,7 @@ document.addEventListener("DOMContentLoaded", event => {
     function tryAdvance() {
         const answerResponse = checkAnswers();
         if (answerResponse === "Correct") {
-            location.href = `level-${level + 1}.html`;
+            location.href = `${level + 1}.html`;
         } else {
             if (answerResponse != "Wrong" || puzzles[levelIndex].hints.length === 0) {
                 alert(answerResponse);
